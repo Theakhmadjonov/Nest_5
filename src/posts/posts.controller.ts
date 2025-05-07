@@ -6,41 +6,72 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { JwtGuard } from 'src/common/guards/jwt.guard';
+import { CurrentUser } from 'src/common/decorators/users.decorators';
+import { request } from 'express';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  create(@Body() data: CreatePostDto) {
+  @UseGuards(JwtGuard)
+  async create(@Body() data: CreatePostDto, @CurrentUser() user: any) {
     try {
-      return this.postsService.create(data);
+      const user_id = user.id;
+      return await this.postsService.create(data, user_id);
     } catch (error) {
-      throw new Error(error);
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  async findAllPosts() {
+    try {
+      return await this.postsService.findAllPosts();
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Get('user')
+  @UseGuards(JwtGuard)
+  async findAllUserPosts(@CurrentUser() user: any) {
+    try {
+      const user_id = user.id;
+      return await this.postsService.findAllUserPosts(user_id);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.postsService.findOne(id);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
+  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+    try {
+      return await this.postsService.update(id, updatePostDto);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.postsService.remove(id);
   }
 }

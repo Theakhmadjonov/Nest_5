@@ -2,27 +2,42 @@ import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from 'src/modules/database/prisma.service';
-import bcrypt from "bcrypt"
 @Injectable()
 export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
-  create(data: CreatePostDto) {
-    return this.prisma.post.create({ data: { ...data, user_id: 1 } });
+  async create(data: CreatePostDto, user_id: string) {
+    return await this.prisma.post.create({
+      data: { ...data, user_id: +user_id },
+    });
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async findAllPosts() {
+    return await this.prisma.post.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async findAllUserPosts(user_id: string) {
+    return await this.prisma.post.findMany({ where: { user_id: +user_id } });
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  async findOne(id: string) {
+    return await this.prisma.post.findFirst({ where: { id: +id } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async update(id: string, updatePostDto: UpdatePostDto) {
+    const updatedUser = await this.prisma.post.update({
+      where: {
+        id: +id,
+      },
+      data: updatePostDto,
+    });
+    return updatedUser;
+  }
+
+  async remove(id: string) {
+    return await this.prisma.post.delete({
+      where: {
+        id: +id,
+      },
+    });
   }
 }

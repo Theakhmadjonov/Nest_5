@@ -1,22 +1,33 @@
 import {
   Controller,
   Post,
-  Body
+  Body,
+  HttpException,
+  HttpStatus
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/login')
-  login(@Body() body: LoginDto) {
-    return this.authService.login(body);
+  async login(@Body() body: LoginDto) {
+    try {
+      return await this.authService.login(body);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Post('/register')
-  register(@Body() createAuthDto: any) {
-    return this.authService.register(createAuthDto);
+  async register(@Body() body: RegisterDto) {
+    try {
+      return await this.authService.register(body);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

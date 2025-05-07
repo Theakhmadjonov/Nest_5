@@ -58,5 +58,3 @@ model Like {
   post Post @relation(fields: [post_id], references: [id])
   @@map("likes")
 }
-
-
