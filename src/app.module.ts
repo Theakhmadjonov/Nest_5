@@ -5,9 +5,10 @@ import { ViewsModule } from './views/views.module';
 import { CommentsModule } from './comments/comments.module';
 import { LikesModule } from './likes/likes.module';
 import { AuthModule } from './auth/auth.module';
+import { CoreMOdule } from './modules/core/core.module';
 
 @Module({
-  imports: [UsersModule, PostsModule, ViewsModule, CommentsModule, LikesModule, AuthModule],
+  imports: [UsersModule, PostsModule, ViewsModule, CommentsModule, LikesModule, AuthModule, CoreMOdule],
   controllers: [],
   providers: [],
 })
