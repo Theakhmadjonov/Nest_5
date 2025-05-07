@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from 'src/modules/database/prisma.service';
-
+import bcrypt from "bcrypt"
 @Injectable()
 export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
