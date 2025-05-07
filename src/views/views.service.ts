@@ -1,26 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { CreateViewDto } from './dto/create-view.dto';
-import { UpdateViewDto } from './dto/update-view.dto';
+import { PrismaService } from 'src/modules/database/prisma.service';
 
 @Injectable()
 export class ViewsService {
-  create(createViewDto: CreateViewDto) {
-    return 'This action adds a new view';
+  constructor(private readonly prisma: PrismaService) {}
+  async addView(post_id: CreateViewDto, user_id: string) {
+    return await this.prisma.view.create({
+      data: { user_id: +user_id, post_id: +post_id },
+    });
   }
 
-  findAll() {
-    return `This action returns all views`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} view`;
-  }
-
-  update(id: number, updateViewDto: UpdateViewDto) {
-    return `This action updates a #${id} view`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} view`;
+  async getPosCountViews(post_id: string) {
+    return await this.prisma.view.count({
+      where: {
+        post_id: +post_id,
+      },
+    });
   }
 }
